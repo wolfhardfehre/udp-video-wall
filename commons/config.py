@@ -1,0 +1,2 @@
+RESOLUTION = (640, 480)
+GRID = (2, 2)

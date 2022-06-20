@@ -1,0 +1,11 @@
+# mac os
+.DS_Store
+
+# pycharm
+.idea
+
+# pyenv
+.python-version
+
+# python
+__pycache__
