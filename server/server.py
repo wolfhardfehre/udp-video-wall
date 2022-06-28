@@ -2,11 +2,11 @@ import base64
 
 import cv2
 import imutils
+import numpy as np
 
 from client_listener import ClientListener
 from commons.logger import logger
 from commons.socket_entity import SocketEntity
-from commons.config import RESOLUTION
 
 
 class Server(SocketEntity):
@@ -16,6 +16,7 @@ class Server(SocketEntity):
     def __init__(self):
         super().__init__()
         self._clients = []
+        self._cache = {}
         self._listener = ClientListener(self, self._clients)
         self._socket.bind((self.host_ip, self._PORT_))
 
@@ -32,18 +33,29 @@ class Server(SocketEntity):
                 video.release()
                 break
 
-    @staticmethod
-    def _process_video(video: cv2.VideoCapture) -> bytes:
+    def _process_video(self, video: cv2.VideoCapture) -> bytes:
         frame = video.read()[1]
-        frame = imutils.resize(frame, width=RESOLUTION[0])
+        frame = self._crop_roi(frame=frame)
+        frame = imutils.resize(frame, width=600)
         encoded, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
         message = base64.b64encode(buffer)
         logger.debug('message: %s bytes', len(message) * 0.75)
+        # self._display(frame=frame)    # uncomment for debugging
         return message
 
     def _send_to_clients(self, message: bytes) -> None:
         for client_address in self._clients:
             self._socket.sendto(message, client_address)
+
+    def _crop_roi(self, frame: np.ndarray) -> np.ndarray:
+        if 'width' not in self._cache:
+            self._cache['height'] = frame.shape[1]
+            self._cache['width'] = frame.shape[1] // 4 * 3
+            self._cache['padding'] = (self._cache['width'] - frame.shape[0]) // 2
+        return frame[
+           0:self._cache['height'],
+           self._cache['padding']:self._cache['width'] + self._cache['padding']
+        ]
 
 
 if __name__ == '__main__':

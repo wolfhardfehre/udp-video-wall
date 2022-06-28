@@ -5,7 +5,7 @@ from typing import Optional, Tuple, Dict
 import cv2
 import numpy as np
 
-from commons.config import RESOLUTION, GRID
+from commons.config import GRID
 from commons.logger import logger
 from commons.state import State
 
@@ -16,6 +16,7 @@ class SocketEntity:
     _BUFF_SIZE_ = 65536   # MacOS users need to: sudo sysctl -w net.inet.udp.maxdgram=65535
 
     def __init__(self):
+        self._cache = {}
         self._frames_on = False
         self._state = State(0, 0, 20, 0)
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,18 +59,19 @@ class SocketEntity:
         self._socket.close()
 
     def _crop(self, frame: np.ndarray, screen: int = 0) -> np.ndarray:
-        start_x, start_y, end_x, end_y = self.crop_areas[screen]
+        start_x, start_y, end_x, end_y = self.crop_areas(frame)[screen]
         return frame[start_y:end_y, start_x:end_x]
 
-    @cached_property
-    def crop_areas(self) -> Dict[int, Tuple[int, int, int, int]]:
-        return {screen: self._crop_area(screen) for screen in range(GRID[0] * GRID[1])}
+    def crop_areas(self, frame: np.ndarray) -> Dict[int, Tuple[int, int, int, int]]:
+        if not self._cache:
+            self._cache = {screen: self._crop_area(frame, screen) for screen in range(GRID[0] * GRID[1])}
+        return self._cache
 
     @staticmethod
-    def _crop_area(screen: int) -> Tuple[int, int, int, int]:
-        width = RESOLUTION[0] // GRID[0]
-        height = RESOLUTION[1] // GRID[1]
+    def _crop_area(frame: np.ndarray, screen: int) -> Tuple[int, int, int, int]:
+        width = frame.shape[1] // GRID[0]
+        height = frame.shape[0] // GRID[1]
         position = width * screen
-        start_x = position % RESOLUTION[0]
-        start_y = height * (position // RESOLUTION[0])
+        start_x = position % frame.shape[1]
+        start_y = height * (position // frame.shape[1])
         return start_x, start_y, start_x + width, start_y + height
