@@ -1,2 +1,1 @@
-RESOLUTION = (1024, 768)
 GRID = (2, 2)
