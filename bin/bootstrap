@@ -1,8 +1,5 @@
 #!/bin/sh -e
 
-IP=$1
-SCREEN=$2
-
 echo 'update  and upgrade os'
 sudo apt update && sudo apt upgrade && sudo apt autoremove --assume-yes
 
@@ -11,6 +8,3 @@ python3 -m pip install --user --upgrade pip
 
 echo 'install python packages'
 python -m pip install imutils numpy opencv-python typer invoke
-
-echo 'run client'
-cd /home/pi/Desktop/video-wall/ && PYTHONPATH=. python -m invoke client "$IP" --screen="$SCREEN"

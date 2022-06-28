@@ -21,7 +21,7 @@ class Client(SocketEntity):
     def start(self) -> None:
         self._socket.sendto(b'connect', (self._ip, self._PORT_))
         while True:
-            cv2.namedWindow(winname=self._TITLE_, flags=cv2.WINDOW_FULLSCREEN)
+            cv2.namedWindow(winname=self._TITLE_, flags=cv2.WND_PROP_FULLSCREEN)
             cv2.setWindowProperty(
                 winname=self._TITLE_,
                 prop_id=cv2.WND_PROP_FULLSCREEN,

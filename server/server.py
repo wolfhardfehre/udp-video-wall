@@ -48,10 +48,10 @@ class Server(SocketEntity):
             self._socket.sendto(message, client_address)
 
     def _crop_roi(self, frame: np.ndarray) -> np.ndarray:
-        if 'width' not in self._cache:
-            self._cache['height'] = frame.shape[1]
-            self._cache['width'] = frame.shape[1] // 4 * 3
-            self._cache['padding'] = (self._cache['width'] - frame.shape[0]) // 2
+        if not self._cache:
+            self._cache['height'] = frame.shape[0]
+            self._cache['width'] = frame.shape[0] // 3 * 4
+            self._cache['padding'] = (frame.shape[1] - self._cache['width']) // 2
         return frame[
            0:self._cache['height'],
            self._cache['padding']:self._cache['width'] + self._cache['padding']
