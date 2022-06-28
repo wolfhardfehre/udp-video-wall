@@ -1,22 +1,16 @@
-#!/bin/sh
+#!/bin/sh -e
 
-PYTHON_VERSION=3.8.12
+IP=$1
+SCREEN=$2
 
-echo 'installing pyenv'
-cd /tmp && git clone  https://github.com/pyenv/pyenv.git ~/.pyenv
-{
-  'export PYENV_ROOT="${HOME}/.pyenv"'
-  'if [ -d "${PYENV_ROOT}" ]; then'
-  '    export PATH=${PYENV_ROOT}/bin:$PATH'
-  '    eval "$(pyenv init -)"'
-  'fi'
-} >> ~/.bashrc
+echo 'update  and upgrade os'
+sudo apt update && sudo apt upgrade && sudo apt autoremove --assume-yes
 
-echo 'installing apt libraries'
-sudo apt install bzip2 libreadline6 libreadline6-dev libssl-dev curl
+echo 'upgrade pip'
+python3 -m pip install --user --upgrade pip
 
-echo "installing python ${PYTHON_VERSION}"
-pyenv install $PYTHON_VERSION
+echo 'install python packages'
+python -m pip install imutils numpy opencv-python typer invoke
 
-echo "installing poetry"
-curl -sSL https://install.python-poetry.org | python3 -
+echo 'run client'
+cd /home/pi/Desktop/video-wall/ && PYTHONPATH=. python -m invoke client "$IP" --screen="$SCREEN"

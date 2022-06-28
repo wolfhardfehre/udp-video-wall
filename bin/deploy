@@ -1,5 +1,10 @@
 #!/bin/sh
 
-PI_URL=pi@192.168.0.191
-cd .. && scp -r udp-video-wall $PI_URL:~/Desktop/video-wall
-ssh $PI_URL
+IP=$1
+SCREEN=${2:-0}
+
+PI_URL=pi@192.168.0.230
+
+scp -r client commons bin/bootstrap tasks.py $PI_URL:~/Desktop/video-wall
+
+ssh $PI_URL /home/pi/Desktop/video-wall/bootstrap "$IP" "$SCREEN"

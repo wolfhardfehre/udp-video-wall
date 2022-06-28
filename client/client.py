@@ -13,12 +13,13 @@ cli = typer.Typer()
 class Client(SocketEntity):
     _TITLE_ = 'client'
 
-    def __init__(self, screen: int):
+    def __init__(self, ip: str, screen: int):
+        self._ip = ip
         self._screen = screen
         super().__init__()
 
     def start(self) -> None:
-        self._socket.sendto(b'connect', (self.host_ip, self._PORT_))
+        self._socket.sendto(b'connect', (self._ip, self._PORT_))
         while True:
             cv2.namedWindow(winname=self._TITLE_, flags=cv2.WINDOW_FULLSCREEN)
             cv2.setWindowProperty(
@@ -49,9 +50,9 @@ class Client(SocketEntity):
 
 
 @cli.command()
-def start(screen: int = 0) -> None:
+def start(ip: str, screen: int = 0) -> None:
     try:
-        client = Client(screen=screen)
+        client = Client(ip, screen=screen)
         client.start()
     except KeyboardInterrupt:
         logger.info('shutting client down')
