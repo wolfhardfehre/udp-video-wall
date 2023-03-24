@@ -1,4 +1,6 @@
 import base64
+import os
+import sys
 
 import cv2
 import numpy as np
@@ -21,7 +23,7 @@ class Client(SocketEntity):
     def start(self) -> None:
         self._socket.sendto(b'connect', (self._ip, self._PORT_))
         while True:
-            cv2.namedWindow(winname=self._TITLE_, flags=cv2.WND_PROP_FULLSCREEN)
+            cv2.namedWindow(winname=self._TITLE_, flags=cv2.WINDOW_FULLSCREEN)
             cv2.setWindowProperty(
                 winname=self._TITLE_,
                 prop_id=cv2.WND_PROP_FULLSCREEN,
@@ -56,6 +58,7 @@ def start(ip: str, screen: int = 0) -> None:
         client.start()
     except KeyboardInterrupt:
         logger.info('shutting client down')
+        sys.exit(os.EX_OK)
 
 
 if __name__ == '__main__':
