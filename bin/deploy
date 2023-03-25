@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PI_URL=pi@192.168.0.230
+PI_URL=pi@192.168.1.125
 
 scp -r client commons bin/bootstrap tasks.py $PI_URL:~/Desktop/video-wall
 
