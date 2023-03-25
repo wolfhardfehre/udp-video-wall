@@ -6,11 +6,13 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.8"
-numpy = "^1.22.4"
-opencv-python = "^4.6.0"
 imutils = "^0.5.4"
 invoke = "^1.7.1"
+numpy = "^1.22.4"
+opencv-python = "^4.6.0"
+pyzmq = "^25.0.2"
 typer = "^0.4.1"
+vidgear = "^0.3.0"
 
 [tool.poetry.dev-dependencies]
 
